@@ -6,6 +6,12 @@ import random
 import yaml
 import codecs
 
+
+def time_stamp():
+    localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    return localtime
+
+
 # fixed_plurk
 fixed_plurk = {
     "plurk_id": "",
@@ -13,38 +19,42 @@ fixed_plurk = {
     "qualifier": "says", "lang": "tr_ch"
 }
 
-# get api token
-plurk = PlurkAPI.fromfile("api.key")
+if __name__ == '__main__':
 
-# user info
-with codecs.open("users.yaml", encoding="utf-8") as f:
-    users = yaml.load(f)
-print("Start report\n")
+    # get api token
+    plurk = PlurkAPI.fromfile("api.key")
 
-try:
-    # get every plurks
-    timeline_plurks = plurk.callAPI('/APP/Polling/getPlurks', options={"offset": "2019-10-26T11:48:00"})['plurks']
+    # user info
+    with codecs.open("users.yaml", encoding="utf-8") as f:
+        users = yaml.load(f)
 
-    # choose new plurks(plurk_type == 0) from all plurks
-    unread_plurks = [unread_plurk for unread_plurk in timeline_plurks
-                     if unread_plurk['plurk_type'] == 0 and unread_plurk['owner_id'] in users['ids']]
+    print(f"{time_stamp()} Start report\n")
 
-    for unread_plurk in unread_plurks:
-        # replurk format
-        fixed_plurk['plurk_id'] = unread_plurk['plurk_id']
-        name_id = users['ids'].index(unread_plurk['owner_id'])
-        num = str(random.randint(1, 520))
-        fixed_plurk['content'] = "Hello, world, " + users['names'][name_id] + ".[emo" + num + "]"
+    try:
+        # get every plurks
+        timeline_plurks = plurk.callAPI('/APP/Polling/getPlurks', options={"offset": "2019-10-26T11:48:00"})['plurks']
 
-        # replurk with api
-        plurk.callAPI('/APP/Responses/responseAdd', options=fixed_plurk)
-        plurk.callAPI('/APP/Timeline/markAsRead',
-                      options={"ids": [str(unread_plurk['plurk_id'])]})
+        # choose new plurks(plurk_type == 0) from all plurks
+        unread_plurks = [unread_plurk for unread_plurk in timeline_plurks
+                         if unread_plurk['plurk_type'] == 0 and unread_plurk['owner_id'] in users['ids']]
 
-        # print to log
-        localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        print(f"{localtime} 已讀 {users['names'][name_id]}: {unread_plurk['content'][:10]}\n")
+        for unread_plurk in unread_plurks:
+            # replurk format
+            fixed_plurk['plurk_id'] = unread_plurk['plurk_id']
+            name_id = users['ids'].index(unread_plurk['owner_id'])
+            num = str(random.randint(1, 520))
+            fixed_plurk['content'] = "Hello, world, " + users['names'][name_id] + ".[emo" + num + "]"
 
-        time.sleep(0.3)
-except:
-    pass
+            # replurk with api
+            plurk.callAPI('/APP/Responses/responseAdd', options=fixed_plurk)
+            plurk.callAPI('/APP/Timeline/markAsRead',
+                          options={"ids": [str(unread_plurk['plurk_id'])]})
+
+            # print to log
+            print(f"{time_stamp()} read {users['names'][name_id]}: {unread_plurk['content'][:10]}\n")
+
+            time.sleep(0.3)
+    except:
+        pass
+
+    print(f"{time_stamp()} End report\n")
