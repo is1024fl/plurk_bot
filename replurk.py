@@ -28,8 +28,6 @@ if __name__ == '__main__':
     with codecs.open("users.yaml", encoding="utf-8") as f:
         users = yaml.load(f)
 
-    print(f"{time_stamp()} Start report\n")
-
     try:
         # get every plurks
         timeline_plurks = plurk.callAPI('/APP/Polling/getPlurks', options={"offset": "2019-10-26T11:48:00"})['plurks']
@@ -53,8 +51,5 @@ if __name__ == '__main__':
             # print to log
             print(f"{time_stamp()} read {users['names'][name_id]}: {unread_plurk['content'][:10]}\n")
 
-            time.sleep(0.3)
     except:
         pass
-
-    print(f"{time_stamp()} End report\n")
