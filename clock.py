@@ -9,6 +9,6 @@ if __name__ == '__main__':
 
     @sched.scheduled_job('interval', minutes=5)
     def timed_job():
-        subprocess.call('python -u replurk.py >> replurk.log scheduler', shell=True, close_fds=True)
+        subprocess.call('python -u replurk.py scheduler', shell=True, close_fds=True)
 
     sched.start()
