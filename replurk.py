@@ -40,7 +40,7 @@ if __name__ == '__main__':
             # replurk format
             fixed_plurk['plurk_id'] = unread_plurk['plurk_id']
             name_id = users['ids'].index(unread_plurk['owner_id'])
-            num = str(random.randint(1, 520))
+            num = str(random.randint(1, 560))
             fixed_plurk['content'] = "Hello, world, " + users['names'][name_id] + ".[emo" + num + "]"
 
             # replurk with api
